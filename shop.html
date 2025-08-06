@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kak Rea Beauty</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        .product-card {
+            transition: all 0.3s ease;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        .heart-btn {
+            transition: all 0.3s ease;
+        }
+        .heart-btn:hover {
+            transform: scale(1.1);
+        }
+        .heart-btn.active {
+            color: #f43f5e;
+        }
+        .add-to-cart-btn {
+            transition: all 0.3s ease;
+        }
+        .add-to-cart-btn:hover {
+            transform: scale(1.05);
+        }
+        .filter-btn {
+            transition: all 0.3s ease;
+        }
+        .filter-btn.active {
+            background: linear-gradient(135deg, #f43f5e, #ec4899);
+            color: white;
+        }
+        .search-input {
+            transition: all 0.3s ease;
+        }
+        .search-input:focus {
+            transform: scale(1.02);
+            box-shadow: 0 10px 30px rgba(244, 63, 94, 0.2);
+        }
+        .floating-cart {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        .floating-cart:hover {
+            transform: scale(1.1);
+        }
+        @keyframes bounce {
+            0%, 20%, 53%, 80%, 100% {
+                transform: translate3d(0,0,0);
+            }
+            40%, 43% {
+                transform: translate3d(0,-30px,0);
+            }
+            70% {
+                transform: translate3d(0,-15px,0);
+            }
+            90% {
+                transform: translate3d(0,-4px,0);
+            }
+        }
+        .bounce-animation {
+            animation: bounce 1s ease infinite;
+        }
+    </style>
+</head>
+  <body class="bg-white text-gray-800">
+
+    <!-- Header -->
+<header class="relative sticky top-0 z-50 bg-[url('/gambar/backround.jpg')] bg-cover bg-top bg-no-repeat px-6 py-3 shadow-sm flex items-center justify-between border-b border-pink-100">
+
+  <!-- Kiri: Tombol Kembali + Hamburger + Logo -->
+  <div class="flex items-center gap-4">
+    <!-- 🔙 Tombol Kembali -->
+    <button id="hamburger" class="md:hidden text-gray-700 focus:outline-none">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2"
+        viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round"
+              d="M4 6h16M4 12h16M4 18h16"></path>
+      </svg>
+    </button>
+
+    <a href="utama.html#home" class="text-2xl font-bold text-pink-600 drop-shadow-md" 
+     style="-webkit-text-stroke: 1px black; text-shadow: 2px 2px 4px rgba(0,0,0,0.4);">
+  AureaBeauty
+</a>
+
+
+  </div>
+
+  <!-- 🔍 Pencarian Produk (desktop only) -->
+  <div class="hidden md:block relative flex-1 mx-8 max-w-md">
+    <input 
+      type="text" 
+      placeholder="Cari produk..." 
+      class="search-input w-full pl-10 pr-4 py-2 rounded-full border-2 border-pink-200 focus:border-pink-400 focus:outline-none"
+      oninput="searchProducts(this.value)"
+    >
+    <svg class="w-5 h-5 text-pink-400 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+    </svg>
+  </div>
+
+  <!-- Navigasi & Aksi -->
+  <div class="flex items-center gap-4">
+    <!-- 🔗 Navigasi (desktop) -->
+    <nav class="hidden md:flex gap-6 text-sm font-medium">
+      <a href="utama.html#home" class="hover:text-pink-500">Home</a>
+      <a href="utama.html#our-expert" class="hover:text-pink-500">Our Expert</a>
+      <a href="utama.html#services" class="hover:text-pink-500">Services</a>
+      <a href="utama.html#testimonials" class="hover:text-pink-500">Testimonials</a>
+      <a href="utama.html#faq" class="hover:text-pink-500">FAQ</a>
+    </nav>
+
+    <!-- 🛒 Cart dengan badge -->
+    <button onclick="toggleCart()" class="relative p-2 rounded-full hover:bg-pink-100 transition-colors">
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+    stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+    <path stroke-linecap="round" stroke-linejoin="round"
+          d="M2.25 3h1.386a.75.75 0 01.74.641l.808 5.659a.75.75 0 00.74.641h11.952a.75.75 0 00.74-.641l.808-5.659a.75.75 0 01.74-.641h1.386M5.25 21a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm13.5 0a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
+  </svg>
+      <span id="cartCount" class="absolute -top-1 -right-1 bg-pink-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
+    </button>
+
+    <!-- 🛍️ Tombol Shop -->
+    <a href="shop.html" class="hidden md:block bg-pink-500 text-white px-4 py-2 text-sm rounded-md hover:bg-pink-600">
+      Shop
+    </a>
+  </div>
+
+  <!-- 📱 Mobile Menu -->
+  <div id="mobileMenu" class="fixed top-0 left-0 h-full w-64 bg-white shadow-lg transform -translate-x-full transition-transform duration-300 z-[999] p-6 md:hidden">
+    <button id="closeMenu" class="text-pink-500 text-2xl absolute top-4 right-4">&times;</button>
+    <nav class="flex flex-col gap-4 mt-10 text-sm font-medium">
+      <a href="utama.html#home" class="hover:text-pink-500">Home</a>
+      <a href="utama.html#our-expert" class="hover:text-pink-500">Our Expert</a>
+      <a href="utama.html#services" class="hover:text-pink-500">Services</a>
+      <a href="utama.html#testimonials" class="hover:text-pink-500">Testimonials</a>
+      <a href="utama.html#faq" class="hover:text-pink-500">FAQ</a>
+    </nav>
+  </div>
+</header>
+
+    <!-- Hero Section -->
+    
+    <section class="relative py-16 px-4 text-center bg-[url('/gambar/backround.jpg')] bg-cover bg-top bg-no-repeat bg-fixed">
+        <div class="absolute inset-0 bg-black/10"></div>
+        <div class="relative z-10">
+            <h1 class="text-4xl md:text-6xl font-bold text-white mb-4 drop-shadow-lg">
+                Pilihan Terbaik
+            </h1>
+            <p class="text-white/90 text-lg md:text-xl mb-8 max-w-2xl mx-auto drop-shadow">
+                Temukan produk kecantikan terbaik untuk merawat dan mempercantik diri Anda
+            </p>
+            <button onclick="scrollToProducts()" class="bg-white text-pink-600 px-8 py-3 rounded-full font-semibold hover:bg-pink-50 transition-all transform hover:scale-105 shadow-lg">
+                SEMUA PRODUK
+            </button>
+        </div>
+    </section>
+
+    <!-- Filters -->
+    <section class="py-8 px-4 bg-pink-50 backdrop-blur-sm">
+        <div class="container mx-auto">
+            <div class="flex flex-wrap gap-4 justify-center">
+                <button onclick="filterProducts('all')" class="filter-btn active px-6 py-2 rounded-full border-2 border-pink-200 font-medium">
+                    Semua
+                </button>
+                <button onclick="filterProducts('skincare')" class="filter-btn px-6 py-2 rounded-full border-2 border-pink-200 font-medium">
+                    Skincare
+                </button>
+                <button onclick="filterProducts('makeup')" class="filter-btn px-6 py-2 rounded-full border-2 border-pink-200 font-medium">
+                    Makeup
+                </button>
+                <button onclick="filterProducts('lipstick')" class="filter-btn px-6 py-2 rounded-full border-2 border-pink-200 font-medium">
+                    Lipstik
+                </button>
+                <button onclick="filterProducts('moisturizer')" class="filter-btn px-6 py-2 rounded-full border-2 border-pink-200 font-medium">
+                    Pelembab
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Grid -->
+    <section id="products" class="py-16 px-4">
+        <div class="container mx-auto">
+            <div id="productsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                <!-- Products will be dynamically loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Floating Cart -->
+    <div class="floating-cart">
+        <button onclick="toggleCart()" class="bg-gradient-to-r from-pink-500 to-purple-500 text-white p-4 rounded-full shadow-2xl hover:shadow-3xl">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14a1 1 0 011 1v9a1 1 0 01-1 1H5a1 1 0 01-1-1v-9a1 1 0 011-1z"/>
+            </svg>
+        </button>
+    </div>
+
+    <script>
+        let cart = [];
+        let products = [
+            {
+                id: 1,
+                name: "Creamatte Liquid Lipstick",
+                category: "lipstick",
+                price: 52000,
+                image: "https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=400&h=400&fit=crop",
+                discount: null,
+                inStock: true
+            },
+            {
+                id: 2,
+                name: "Emina Water Bright Glow Gel",
+                category: "moisturizer",
+                price: 42000,
+                image: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=400&h=400&fit=crop",
+                discount: 15,
+                inStock: false
+            },
+            {
+                id: 3,
+                name: "Emina Glossy Stain 01 Autumn Bell",
+                category: "lipstick",
+                price: 56000,
+                image: "https://images.unsplash.com/photo-1631214540242-3cd403043ac8?w=400&h=400&fit=crop",
+                discount: null,
+                inStock: true
+            },
+            {
+                id: 4,
+                name: "Emina Airy Surprise Tint 01 Y2K 3g",
+                category: "makeup",
+                price: 69500,
+                image: "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=400&h=400&fit=crop",
+                discount: null,
+                inStock: true
+            },
+            {
+                id: 5,
+                name: "Vitamin C Serum Brightening",
+                category: "skincare",
+                price: 85000,
+                image: "https://images.unsplash.com/photo-1620916297892-4676eff8bfb3?w=400&h=400&fit=crop",
+                discount: 20,
+                inStock: true
+            },
+            {
+                id: 6,
+                name: "Hydrating Face Mask",
+                category: "skincare",
+                price: 35000,
+                image: "https://images.unsplash.com/photo-1612817288484-6f916006741a?w=400&h=400&fit=crop",
+                discount: null,
+                inStock: true
+            },
+            {
+                id: 7,
+                name: "Matte Foundation Natural",
+                category: "makeup",
+                price: 120000,
+                image: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&h=400&fit=crop",
+                discount: 10,
+                inStock: true
+            },
+            {
+                id: 8,
+                name: "Rose Gold Highlighter",
+                category: "makeup",
+                price: 95000,
+                image: "https://images.unsplash.com/photo-1583241800398-241330819120?w=400&h=400&fit=crop",
+                discount: null,
+                inStock: true
+            }
+        ];
+
+        function renderProducts(productsToRender = products) {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = '';
+
+            productsToRender.forEach(product => {
+                const discountPrice = product.discount ? product.price * (1 - product.discount / 100) : null;
+                
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card bg-white rounded-2xl shadow-lg overflow-hidden relative';
+                productCard.innerHTML = `
+                    ${product.discount ? `<div class="absolute top-4 left-4 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-semibold z-10">-${product.discount}%</div>` : ''}
+                    ${!product.inStock ? `<div class="absolute top-4 right-4 bg-gray-500 text-white px-2 py-1 rounded-full text-xs font-semibold z-10">Stok Habis</div>` : ''}
+                    
+                    <div class="relative group">
+                        <img src="${product.image}" alt="${product.name}" class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300">
+                        <button onclick="toggleWishlist(${product.id})" class="heart-btn absolute top-4 right-4 p-2 bg-white/80 rounded-full hover:bg-white">
+                            <svg class="w-5 h-5 text-gray-400 hover:text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <div class="p-6">
+                        <h3 class="font-semibold text-gray-800 mb-2 line-clamp-2">${product.name}</h3>
+                        <p class="text-sm text-gray-500 mb-3 capitalize">${product.category}</p>
+                        
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex flex-col">
+                                ${product.discount ? 
+                                    `<span class="text-lg font-bold text-pink-600">Rp ${discountPrice.toLocaleString('id-ID')}</span>
+                                     <span class="text-sm text-gray-400 line-through">Rp ${product.price.toLocaleString('id-ID')}</span>` :
+                                    `<span class="text-lg font-bold text-pink-600">Rp ${product.price.toLocaleString('id-ID')}</span>`
+                                }
+                            </div>
+                        </div>
+                        
+                        <button onclick="addToCart(${product.id})" ${!product.inStock ? 'disabled' : ''} 
+                                class="add-to-cart-btn w-full py-3 px-4 rounded-full font-semibold transition-all ${product.inStock ? 'bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}">
+                            ${product.inStock ? '🛒 Tambah ke Keranjang' : 'Stok Habis'}
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(productCard);
+            });
+        }
+
+        function filterProducts(category) {
+            // Update filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Filter products
+            const filteredProducts = category === 'all' 
+                ? products 
+                : products.filter(product => product.category === category);
+            
+            renderProducts(filteredProducts);
+        }
+
+        function searchProducts(query) {
+            const filteredProducts = products.filter(product =>
+                product.name.toLowerCase().includes(query.toLowerCase()) ||
+                product.category.toLowerCase().includes(query.toLowerCase())
+            );
+            renderProducts(filteredProducts);
+        }
+
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product || !product.inStock) return;
+
+            const existingItem = cart.find(item => item.id === productId);
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
+
+            updateCartCount();
+            showAddedToCartAnimation();
+        }
+
+        function updateCartCount() {
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById('cartCount').textContent = totalItems;
+        }
+
+        function showAddedToCartAnimation() {
+            const floatingCart = document.querySelector('.floating-cart button');
+            floatingCart.classList.add('bounce-animation');
+            setTimeout(() => {
+                floatingCart.classList.remove('bounce-animation');
+            }, 1000);
+        }
+
+        function toggleWishlist(productId) {
+            const heartBtn = event.currentTarget;
+            heartBtn.classList.toggle('active');
+            
+            const svg = heartBtn.querySelector('svg');
+            if (heartBtn.classList.contains('active')) {
+                svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" fill="currentColor" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>';
+            } else {
+                svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>';
+            }
+        }
+
+        function toggleCart() {
+            alert(`Keranjang belanja:\n${cart.length === 0 ? 'Keranjang kosong' : cart.map(item => `${item.name} x${item.quantity}`).join('\n')}`);
+        }
+
+        function scrollToProducts() {
+            document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function goBack() {
+            window.history.back();
+        }
+
+        // Initialize
+        renderProducts();
+          const hamburger = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobileMenu');
+  const closeMenu = document.getElementById('closeMenu');
+
+  hamburger.addEventListener('click', () => {
+    mobileMenu.classList.remove('-translate-x-full');
+  });
+
+  closeMenu.addEventListener('click', () => {
+    mobileMenu.classList.add('-translate-x-full');
+  });
+    </script>
+</body>
+<!-- Footer -->
+<footer class="bg-[#1E1E1E] text-white py-12">
+  <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
+    
+    <!-- Logo & Tagline -->
+    <div>
+      <h2 class="text-2xl font-bold mb-3">AureaBeauty</h2>
+      <p class="text-sm text-gray-400">Membawa kecantikan alami untuk setiap wanita Indonesia.</p>
+    </div>
+
+    <!-- Menu Navigasi -->
+    <div>
+      <h3 class="text-xl font-semibold mb-3">Navigasi</h3>
+      <ul class="space-y-2 text-sm text-gray-300">
+        <li><a href="#home" class="hover:text-pink-400">Beranda</a></li>
+        <li><a href="#service" class="hover:text-pink-400">Layanan</a></li>
+        <li><a href="#testimonial" class="hover:text-pink-400">Testimoni</a></li>
+        <li><a href="#faq" class="hover:text-pink-400">FAQ</a></li>
+      </ul>
+    </div>
+
+    <!-- Kontak -->
+    <div>
+      <h3 class="text-xl font-semibold mb-3">Kontak</h3>
+      <p class="text-sm text-gray-300">Jl. Mawar No. 123, Surakarta</p>
+      <p class="text-sm text-gray-300">WhatsApp: <a href="https://wa.me/6281234567890" target="_blank" class="hover:text-pink-400">+62 812-3456-7890</a></p>
+      <p class="text-sm text-gray-300">Email: <a href="mailto:aureabeauty@email.com" class="hover:text-pink-400">aureabeauty@email.com</a></p>
+    </div>
+
+    <!-- Sosial Media -->
+    <div>
+      <h3 class="text-xl font-semibold mb-3">Ikuti Kami</h3>
+      <div class="flex space-x-4 mt-2">
+        <a href="#" class="hover:text-pink-400"><i class="fab fa-instagram mr-2"></i> Instagram</a>
+        <a href="#" class="hover:text-pink-400"><i class="fab fa-tiktok mr-2"></i> TikTok</a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Copyright -->
+  <div class="mt-10 border-t border-gray-700 pt-6 text-center text-sm text-gray-500">
+    © 2025 AureaBeauty. All rights reserved.
+  </div>
+</footer>
+</html>
